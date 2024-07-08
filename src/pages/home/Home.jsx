@@ -6,10 +6,23 @@ import Footer from "../../components/footer/Footer.jsx";
 function Home() {
     return (
         <div>
-            <Header/>
-            <Nav/>
-            <Content/>
-            <Footer/>
+            <header>
+                <Header/>
+            </header>
+
+            <div className="grid grid-cols-12">
+                <nav className="col-span-2">
+                    <Nav/>
+                </nav>
+
+                <section className="col-span-8">
+                    <Content/>
+                </section>
+            </div>
+
+            <footer>
+                <Footer/>
+            </footer>
         </div>
     )
 }
