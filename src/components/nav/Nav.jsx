@@ -1,15 +1,10 @@
-import { Button, Drawer, Sidebar, TextInput } from "flowbite-react";
-import { useState } from "react";
+import { Sidebar } from "flowbite-react";
 
 function Nav() {
 
-    const [isOpen, setIsOpen] = useState(true);
-
-    const handleClose = () => setIsOpen(false);
-
   return (
       <>
-          <Sidebar aria-label="Sidebar with multi-level dropdown example">
+          <Sidebar aria-label="Sidebar with multi-level dropdown example" className="py-3 px-3">
               <Sidebar.Items>
                   <Sidebar.ItemGroup>
                       <Sidebar.Item href="#">
