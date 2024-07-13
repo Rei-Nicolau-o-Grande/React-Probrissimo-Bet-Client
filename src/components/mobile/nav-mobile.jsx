@@ -5,7 +5,8 @@ function NavMobile() {
         <>
             <div className="py-5 px-3">
                 <Tooltip content="Roleta da picanha 🥩">
-                    <Avatar placeholderInitials="RR" rounded/>
+                    <Avatar img={"src/assets/img/roleta_da_picanha.jpeg"} placeholderInitials="" rounded
+                            className={"w-20"}/>
                 </Tooltip>
             </div>
         </>
