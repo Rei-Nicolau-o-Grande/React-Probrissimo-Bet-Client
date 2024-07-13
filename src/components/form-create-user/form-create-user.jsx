@@ -57,8 +57,8 @@ function FormCreateUser() {
                                     id="email"
                                     placeholder="email@email.com"
                                     color={`${errors.email ? 'failure' : ''}`}
-                                    {...register("email",
-                                {required: true,
+                                    {...register("email",{
+                                        required: true,
                                         validate: (value) => validator.isEmail(value)
                                     })}
                                     helperText={
@@ -77,7 +77,10 @@ function FormCreateUser() {
                                     type="password"
                                     placeholder="********"
                                     color={`${errors.password ? 'failure' : ''}`}
-                                    {...register("password", {required: true, minLength: 3})}
+                                    {...register("password",{
+                                        required: true,
+                                        minLength: 3
+                                    })}
                                     helperText={
                                         errors?.password?.type === "required" ? 'Campo obrigatório.' : '' ||
                                         errors?.password?.type === "minLength" ? 'Mínimo 3 caracteres.' : ''
