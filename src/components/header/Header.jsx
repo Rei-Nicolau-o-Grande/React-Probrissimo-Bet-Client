@@ -18,9 +18,11 @@ function Header() {
                 </NavLink>
                 <Navbar.Toggle />
                 <Navbar.Collapse>
-                    <Button color={"light"} className={"my-3"} pill>
-                        <NavLink to={"/user"}>Perfil</NavLink>
-                    </Button>
+                    <NavLink to={"/user"}>
+                        <Button color={"light"} className={"my-3 w-full"} pill>
+                            Perfil
+                        </Button>
+                    </NavLink>
                     <Button color={"failure"} className={"my-3"} pill>Sair</Button>
                     <FormLoginUser />
                     <FormCreateUser />
