@@ -1,7 +1,9 @@
-import { Button, Checkbox, Label, Modal, TextInput } from "flowbite-react";
+import { Button, Checkbox, Label, Modal, TextInput, Alert } from "flowbite-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import validator from "validator";
+import {useCookies} from "react-cookie";
+import axiosInstance from "../../helper/axios-instance.js";
 
 function FormCreateUser() {
     const {
@@ -11,8 +13,25 @@ function FormCreateUser() {
         reset
     } = useForm();
     const [openModal, setOpenModal] = useState(false);
+    const [data, setData] = useState(null);
+    const [apiError, setApiError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
-    const onSubmitCreateUser = (data) => {
+    const onSubmitCreateUser = async (formData) => {
+        setLoading(true);
+        setApiError(null);
+
+        try {
+            const response = await axiosInstance.post("/users", formData);
+            setData(response.data);
+            setLoading(false);
+            alert("Usuário criado com sucesso!");
+        } catch (error) {
+            setApiError(error.response.data.message);
+            setLoading(false);
+            console.error(error);
+        }
     }
 
     function onCloseModal() {
@@ -28,6 +47,8 @@ function FormCreateUser() {
                 <Modal.Body>
                     <form onSubmit={handleSubmit(onSubmitCreateUser)}>
                         <div className="space-y-6">
+                            {loading && <Alert color={"cyan"}>Loading...</Alert>}
+                            {apiError && <Alert color={"failure"}>{apiError}</Alert>}
                             <h3 className="text-xl font-medium text-gray-900 dark:text-white">Criar Conta</h3>
                             <div>
                                 <div className="mb-2 block">
