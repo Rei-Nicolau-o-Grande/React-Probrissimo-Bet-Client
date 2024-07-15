@@ -9,8 +9,9 @@ function Header() {
     const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
     const handleLogout = () => {
-        removeCookie("accessToken");
-        alert("Você foi deslogado com sucesso!");
+        if (confirm("Você deseja sair?")) {
+            removeCookie("accessToken");
+        }
     };
 
     const isAuthenticated = !!cookies.accessToken;
