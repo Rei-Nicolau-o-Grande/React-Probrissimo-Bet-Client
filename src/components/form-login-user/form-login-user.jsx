@@ -1,7 +1,9 @@
-import { Button, Checkbox, Label, Modal, TextInput } from "flowbite-react";
+import { Button, Checkbox, Label, Modal, TextInput, Alert} from "flowbite-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import validator from "validator";
+import axiosInstance from "../../helper/axios-instance.js";
+import {useCookies} from "react-cookie";
 
 function FormLoginUser() {
     const {
@@ -11,12 +13,28 @@ function FormLoginUser() {
         reset
     } = useForm();
     const [openModal, setOpenModal] = useState(false);
+    const [data, setData] = useState(null);
+    const [apiError, setApiError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
-    const onSubmitLoginUser = (data) => {
-        console.log(data);
+    const onSubmitLoginUser = async (formData) => {
+        setLoading(true);
+        setApiError(null);
+
+        try {
+            const response = await axiosInstance.post("/token/login", formData);
+            setData(response.data);
+            setLoading(false);
+            const expirationDate = new Date(response.data.expiresIn);
+            setCookie("accessToken", response.data.accessToken, {
+                expires: expirationDate,
+            });
+        } catch (error) {
+            setApiError(error.response.data.message);
+            setLoading(false);
+        }
     };
-
-    console.log({ errors });
 
     function onCloseModal() {
         setOpenModal(false);
@@ -31,6 +49,8 @@ function FormLoginUser() {
                 <Modal.Body>
                     <form onSubmit={handleSubmit(onSubmitLoginUser)}>
                         <div className="space-y-6">
+                            {loading && <Alert color={"cyan"}>Loading...</Alert>}
+                            {apiError && <Alert color={"failure"}>{apiError}</Alert>}
                             <h3 className="text-xl font-medium text-gray-900 dark:text-white">Entrar na sua Conta</h3>
                             <div>
                                 <div className="mb-2 block">

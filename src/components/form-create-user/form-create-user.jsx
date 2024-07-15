@@ -13,10 +13,7 @@ function FormCreateUser() {
     const [openModal, setOpenModal] = useState(false);
 
     const onSubmitCreateUser = (data) => {
-        console.log(data);
     }
-
-    console.log({ errors })
 
     function onCloseModal() {
         setOpenModal(false);
