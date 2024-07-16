@@ -1,6 +1,6 @@
 import { Navbar, Button } from "flowbite-react";
 import { HiUserCircle, HiLogout } from "react-icons/hi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import FormLoginUser from "../form-login-user/form-login-user.jsx";
 import FormCreateUser from "../form-create-user/form-create-user.jsx";
 import { useCookies } from "react-cookie";
@@ -8,10 +8,12 @@ import { useCookies } from "react-cookie";
 function Header() {
 
     const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         if (confirm("Você deseja sair?")) {
             removeCookie("accessToken");
+            navigate("/");
         }
     };
 
