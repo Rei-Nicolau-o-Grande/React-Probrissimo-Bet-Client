@@ -1,14 +1,24 @@
 import Header from "../../components/header/Header.jsx";
-import Content from "../../components/content/Content.jsx";
 import Footer from "../../components/footer/Footer.jsx";
+import Tab from "./components/Tab.jsx";
 
 function User() {
+
     return (
-        <div>
-            <Header/>
-            <Content/>
-            <Footer/>
-        </div>
+        <>
+            <header>
+                <Header/>
+            </header>
+
+            <section>
+                <Tab/>
+            </section>
+
+
+            <footer>
+                <Footer/>
+            </footer>
+        </>
     );
 }
 
