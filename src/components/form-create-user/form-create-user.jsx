@@ -96,12 +96,22 @@ function FormCreateUser() {
                                     placeholder="********"
                                     color={`${errors.password ? 'failure' : ''}`}
                                     {...register("password",{
-                                        required: true,
-                                        minLength: 3
+                                        required: "Campo obrigatório.",
+                                        minLength: {
+                                            value: 3,
+                                            message: "Mínimo 3 caracteres."
+                                        },
+                                        validate: {
+                                            hasUpperCase: value => /[A-Z]/.test(value) || "Deve conter pelo menos uma letra maiúscula.",
+                                            hasNumber: value => /\d/.test(value) || "Deve conter pelo menos um número."
+                                        }
+
                                     })}
                                     helperText={
-                                        errors?.password?.type === "required" ? 'Campo obrigatório.' : '' ||
-                                        errors?.password?.type === "minLength" ? 'Mínimo 3 caracteres.' : ''
+                                        errors?.password?.message ||
+                                        (errors?.password?.type === "required" ? 'Campo obrigatório.' : '') ||
+                                        (errors?.password?.type === "minLength" ? 'Mínimo 3 caracteres.' : '') ||
+                                        (errors?.password?.type === "validate" && errors?.password?.message)
                                     }
                                 />
                             </div>
