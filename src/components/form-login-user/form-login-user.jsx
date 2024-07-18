@@ -22,18 +22,23 @@ function FormLoginUser() {
         setLoading(true);
         setApiError(null);
 
-        try {
-            const response = await axiosInstance.post("/token/login", formData);
-            setData(response.data);
-            setLoading(false);
-            const expirationDate = new Date(response.data.expiresIn);
-            setCookie("accessToken", response.data.accessToken, {
-                expires: expirationDate,
-            });
-        } catch (error) {
-            setApiError(error.response.data.message);
-            setLoading(false);
-        }
+        await axiosInstance.post("/token/login", formData)
+            .then(
+                response => {
+                    setData(response.data);
+                    setLoading(false);
+                    const expirationDate = new Date(response.data.expiresIn);
+                    setCookie("accessToken", response.data.accessToken, {
+                        expires: expirationDate,
+                    });
+                }
+            )
+            .catch(
+                error => {
+                    setApiError(error.response.data.message);
+                    setLoading(false);
+                }
+            );
     };
 
     function onCloseModal() {
@@ -64,11 +69,13 @@ function FormLoginUser() {
                                     color={`${errors.email ? 'failure' : ''}`}
                                     {...register("email",{
                                         required: true,
-                                        validate: (value) => validator.isEmail(value)
+                                        validate: {
+                                            email: (value) => validator.isEmail(value)
+                                        }
                                     })}
                                     helperText={
                                         errors?.email?.type === "required" ? 'Campo obrigatório.' : '' ||
-                                        errors?.email?.type === "validate" ? 'Email inválido.' : ''
+                                        errors?.email?.type === "email" ? 'Email inválido.' : ''
                                     }
                                 />
                             </div>
