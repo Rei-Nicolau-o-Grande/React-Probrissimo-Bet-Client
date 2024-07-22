@@ -1,27 +1,48 @@
-import {Alert, Button, Checkbox, Label, Modal, TextInput} from "flowbite-react";
-import {useState} from "react";
 import {useForm} from "react-hook-form";
-import validator from "validator";
+import {useEffect, useState} from "react";
 import {useCookies} from "react-cookie";
 import axiosInstance from "../../helper/axios-instance.js";
+import {Alert, Button, Checkbox, Label, Modal, TextInput, Dropdown} from "flowbite-react";
+import validator from "validator";
 
-function FormCreateUser() {
+function FormUpdateUser({ openModal, setOpenModal, userData, onCloseModal }) {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors},
         reset
     } = useForm();
-    const [openModal, setOpenModal] = useState(false);
+    // const [openModal, setOpenModal] = useState(false);
     const [data, setData] = useState(null);
     const [apiError, setApiError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
-    const onSubmitCreateUser = async (formData) => {
+    useEffect(() => {
+        if (openModal && userData) {
+            setValue("username", userData.username);
+            setValue("email", userData.email);
+        }
+    }, [openModal, userData, setValue]);
+
+    const onSubmitUpdateUser = async (formDataUpdate) => {
+        const currentUsername = userData.username;
+        const currentEmail = userData.email;
+        const { username, email, password } = formDataUpdate;
+
+        if (username === currentUsername && email === currentEmail && !password) {
+            setApiError("Você deve alterar pelo menos um campo.");
+            return;
+        }
+
         setLoading(true);
         setApiError(null);
-        await axiosInstance.post("/users", formData)
+        await axiosInstance.put(`/users/${userData.id}`, formDataUpdate, {
+            headers: {
+                Authorization: `Bearer ${cookies.accessToken}`
+            }
+        })
             .then(
                 response => {
                     setData(response.data);
@@ -37,7 +58,7 @@ function FormCreateUser() {
             );
     }
 
-    function onCloseModal() {
+    function handleClose() {
         setOpenModal(false);
         setApiError(null);
         reset();
@@ -45,20 +66,19 @@ function FormCreateUser() {
 
     return (
         <>
-            <Button onClick={() => setOpenModal(true)} color={"blue"} className={"my-3"} pill>Criar Conta</Button>
-            <Modal dismissible show={openModal} size="md" onClose={onCloseModal} popup>
+            <Modal dismissible show={openModal} size="md" onClose={handleClose} popup>
                 <Modal.Header />
                 <Modal.Body>
-                    <form onSubmit={handleSubmit(onSubmitCreateUser)}>
+                    <form onSubmit={handleSubmit(onSubmitUpdateUser)}>
                         <div className="space-y-6">
                             {loading && <Alert color={"cyan"}>Loading...</Alert>}
                             {apiError && <Alert color={"failure"}>{apiError}</Alert>}
 
-                            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Criar Conta</h3>
+                            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Editar Conta</h3>
                             <div>
                                 <div className="mb-2 block">
                                     <Label htmlFor="username" value="Usuário"
-                                       color={`${errors.username ? 'failure' : ''}`}/>
+                                           color={`${errors.username ? 'failure' : ''}`}/>
                                 </div>
                                 <TextInput
                                     id="username"
@@ -69,9 +89,13 @@ function FormCreateUser() {
                                         required: true,
                                         validate: {
                                             unique: async (value) => {
-                                                return await axiosInstance.get(`/validation/username/${value}`)
-                                                    .then(response => !response.data)
-                                                    .catch(error => error.response.data);
+                                                const currentUsername = userData.username;
+                                                if (value !== currentUsername) {
+                                                    return await axiosInstance.get(`/validation/username/${value}`)
+                                                        .then(response => !response.data)
+                                                        .catch(error => error.response.data);
+                                                }
+                                                return true;
                                             }
                                         }
                                     })}
@@ -84,7 +108,7 @@ function FormCreateUser() {
                             <div>
                                 <div className="mb-2 block">
                                     <Label htmlFor="email" value="Email"
-                                        color={`${errors.email ? 'failure' : ''}`}/>
+                                           color={`${errors.email ? 'failure' : ''}`}/>
                                 </div>
                                 <TextInput
                                     id="email"
@@ -95,9 +119,13 @@ function FormCreateUser() {
                                         validate: {
                                             email: (value) => validator.isEmail(value),
                                             unique: async (value) => {
-                                                return await axiosInstance.get(`/validation/email/${value}`)
-                                                    .then(response => !response.data)
-                                                    .catch(error => error.response.data);
+                                                const currentEmail = userData.email;
+                                                if (value !== currentEmail) {
+                                                    return await axiosInstance.get(`/validation/email/${value}`)
+                                                        .then(response => !response.data)
+                                                        .catch(error => error.response.data);
+                                                }
+                                                return true;
                                             }
                                         }
                                     })}
@@ -111,7 +139,7 @@ function FormCreateUser() {
                             <div>
                                 <div className="mb-2 block">
                                     <Label htmlFor="password" value="Senha"
-                                        color={`${errors.password ? 'failure' : ''}`}/>
+                                           color={`${errors.password ? 'failure' : ''}`}/>
                                 </div>
                                 <TextInput
                                     id="password"
@@ -119,20 +147,15 @@ function FormCreateUser() {
                                     placeholder="********"
                                     color={`${errors.password ? 'failure' : ''}`}
                                     {...register("password",{
-                                        required: true,
-                                        minLength: {
-                                            value: 3,
-                                            message: "Mínimo 3 caracteres."
-                                        },
                                         validate: {
-                                            hasUpperCase: value => /[A-Z]/.test(value) || "Deve conter pelo menos uma letra maiúscula.",
-                                            hasNumber: value => /\d/.test(value) || "Deve conter pelo menos um número."
+                                            minLength: (value) => value.length === 0 || value.length >= 3 || "Mínimo 3 caracteres.",
+                                            hasUpperCase: (value) => value.length === 0 || /[A-Z]/.test(value) || "Deve conter pelo menos uma letra maiúscula.",
+                                            hasNumber: (value) => value.length === 0 || /\d/.test(value) || "Deve conter pelo menos um número."
                                         }
 
                                     })}
                                     helperText={
                                         errors?.password?.message ||
-                                        (errors?.password?.type === "required" ? 'Campo obrigatório.' : '') ||
                                         (errors?.password?.type === "minLength" ? 'Mínimo 3 caracteres.' : '') ||
                                         (errors?.password?.type === "hasUpperCase" && errors?.password?.message) ||
                                         (errors?.password?.type === "hasNumber" && errors?.password?.message)
@@ -149,7 +172,7 @@ function FormCreateUser() {
                                 </a>
                             </div>
                             <div className="w-full">
-                                <Button type={"submit"} disabled={Object.keys(errors).length > 0}>Criar</Button>
+                                <Button type={"submit"} disabled={Object.keys(errors).length > 0}>Atualizar</Button>
                             </div>
                             <div className="flex justify-between text-sm font-medium text-gray-500 dark:text-gray-300">
                                 Not registered?&nbsp;
@@ -163,7 +186,6 @@ function FormCreateUser() {
             </Modal>
         </>
     );
-
 }
 
-export default FormCreateUser;
+export default FormUpdateUser;

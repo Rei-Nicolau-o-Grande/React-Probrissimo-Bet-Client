@@ -2,37 +2,46 @@ import { Card, Dropdown } from "flowbite-react";
 import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../helper/axios-instance.js";
+import FormUpdateUser from "../../../components/form-update-user/form-update-user.jsx";
 
 function Profile() {
-
     const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+
+    const fetchUserData = async () => {
+        setLoading(true);
+        if (cookies.accessToken) {
+            await axiosInstance.get("/users/me", {
+                headers: {
+                    Authorization: `Bearer ${cookies.accessToken}`
+                }
+            })
+                .then(
+                    response => {
+                        setLoading(false);
+                        setUserData(response.data);
+                        console.log("User data:", response.data);
+                    }
+                )
+                .catch(
+                    error => {
+                        setLoading(false);
+                        console.error("Error fetching user data:", error);
+                    }
+                );
+        }
+    };
 
     useEffect(() => {
-        const fetchUserData = async () => {
-
-            setLoading(true);
-
-            if (cookies.accessToken) {
-                try {
-                    const response = await axiosInstance.get("/users/me", {
-                        headers: {
-                            Authorization: `Bearer ${cookies.accessToken}`
-                        }
-                    });
-                    setLoading(false);
-                    setUserData(response.data);
-                    console.log(response.data);
-                } catch (error) {
-                    setLoading(false);
-                    console.error("Error fetching user data:", error);
-                }
-            }
-        };
-
         fetchUserData();
     }, [cookies.accessToken]);
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        fetchUserData();
+    };
 
     return (
         <div className={``}>
@@ -41,12 +50,12 @@ function Profile() {
                 <Card className="max-w-sm">
                     <div className="flex justify-end px-4 pt-4">
                         <Dropdown inline label="">
-                            <Dropdown.Item>
+                            <Dropdown.Item onClick={() => setOpenModal(true)}>
                                 <a
                                     href="#"
                                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
                                 >
-                                    Edit
+                                    Editar Conta
                                 </a>
                             </Dropdown.Item>
                             <Dropdown.Item>
@@ -92,6 +101,14 @@ function Profile() {
                             </a>
                         </div>
                     </div>
+
+                    <FormUpdateUser
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        userData={userData}
+                        onCloseModal={handleCloseModal}
+                    />
+
                 </Card>
             )}
         </div>
