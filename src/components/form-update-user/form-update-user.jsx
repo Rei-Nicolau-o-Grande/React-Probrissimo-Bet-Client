@@ -93,7 +93,7 @@ function FormUpdateUser({ openModal, setOpenModal, userData, onCloseModal }) {
                                                 if (value !== currentUsername) {
                                                     return await axiosInstance.get(`/validation/username/${value}`)
                                                         .then(response => !response.data)
-                                                        .catch(error => error.response.data);
+                                                        .catch(error => error.response.data.errorFields.username.join(' '));
                                                 }
                                                 return true;
                                             }
@@ -101,7 +101,7 @@ function FormUpdateUser({ openModal, setOpenModal, userData, onCloseModal }) {
                                     })}
                                     helperText={
                                         errors?.username?.type === "required" ? 'Campo obrigatório.' : '' ||
-                                        errors?.username?.type === "unique" ? 'Usuário já existe.' : ''
+                                        errors?.username?.type === "unique" ? errors.username?.message : ''
                                     }
                                 />
                             </div>
@@ -123,7 +123,7 @@ function FormUpdateUser({ openModal, setOpenModal, userData, onCloseModal }) {
                                                 if (value !== currentEmail) {
                                                     return await axiosInstance.get(`/validation/email/${value}`)
                                                         .then(response => !response.data)
-                                                        .catch(error => error.response.data);
+                                                        .catch(error => error.response.data.errorFields.email.join(' '));
                                                 }
                                                 return true;
                                             }
@@ -132,7 +132,7 @@ function FormUpdateUser({ openModal, setOpenModal, userData, onCloseModal }) {
                                     helperText={
                                         errors?.email?.type === "required" ? 'Campo obrigatório.' : '' ||
                                         errors?.email?.type === "email" ? 'Email inválido.' : '' ||
-                                        errors?.email?.type === "unique" ? 'Email já existe.' : ''
+                                        errors?.email?.type === "unique" ? errors.email?.message : ''
                                     }
                                 />
                             </div>
