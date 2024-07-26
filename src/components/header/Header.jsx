@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import FormLoginUser from "../form-login-user/form-login-user.jsx";
 import FormCreateUser from "../form-create-user/form-create-user.jsx";
 import { useCookies } from "react-cookie";
+import WalletModal from "../wallet-modal/wallet-modal.jsx";
 
 function Header() {
 
@@ -34,6 +35,8 @@ function Header() {
                 <Navbar.Collapse>
                     {isAuthenticated ? (
                         <>
+                            <WalletModal />
+
                             <NavLink to={"/user"}>
                                 <Button color={"light"} className={"my-3 w-full"} pill>
                                     <HiUserCircle className={"mr-2 h-5 w-5"} />
