@@ -5,6 +5,7 @@ import FormLoginUser from "../form-login-user/form-login-user.jsx";
 import FormCreateUser from "../form-create-user/form-create-user.jsx";
 import { useCookies } from "react-cookie";
 import WalletModal from "../wallet-modal/wallet-modal.jsx";
+import { jwtDecode } from "jwt-decode";
 
 function Header() {
 
@@ -19,6 +20,12 @@ function Header() {
     };
 
     const isAuthenticated = !!cookies.accessToken;
+    let decodedToken = null;
+    if (isAuthenticated) {
+        try {
+            decodedToken = jwtDecode(cookies.accessToken);
+        } catch (error) { /* empty */ }
+    }
 
     return (
         <>
@@ -33,20 +40,37 @@ function Header() {
                 </NavLink>
                 <Navbar.Toggle />
                 <Navbar.Collapse>
-                    {isAuthenticated ? (
+                    {isAuthenticated && decodedToken ? (
                         <>
-                            <WalletModal />
-
-                            <NavLink to={"/user"}>
-                                <Button color={"light"} className={"my-3 w-full"} pill>
-                                    <HiUserCircle className={"mr-2 h-5 w-5"} />
-                                    Perfil
-                                </Button>
-                            </NavLink>
-                            <Button color={"failure"} className={"my-3"} pill onClick={handleLogout}>
-                                Sair
-                                <HiLogout className={"ml-2 h-5 w-5"} />
-                            </Button>
+                            {decodedToken.roles.includes('Player') && (
+                                <>
+                                    <WalletModal />
+                                    <NavLink to={'/user'}>
+                                        <Button color={'light'} className={'my-3 w-full'} pill>
+                                            <HiUserCircle className={'mr-2 h-5 w-5'} />
+                                            Perfil
+                                        </Button>
+                                    </NavLink>
+                                    <Button color={'failure'} className={'my-3'} pill onClick={handleLogout}>
+                                        Sair
+                                        <HiLogout className={'ml-2 h-5 w-5'} />
+                                    </Button>
+                                </>
+                            )}
+                            {decodedToken.roles.includes('Admin') && (
+                                <>
+                                    <NavLink to={'/admin'}>
+                                        <Button color={'light'} className={'my-3 w-full'} pill>
+                                            <HiUserCircle className={'mr-2 h-5 w-5'} />
+                                            Admin
+                                        </Button>
+                                    </NavLink>
+                                    <Button color={'failure'} className={'my-3'} pill onClick={handleLogout}>
+                                        Sair
+                                        <HiLogout className={'ml-2 h-5 w-5'} />
+                                    </Button>
+                                </>
+                            )}
                         </>
                     ) : (
                         <>
