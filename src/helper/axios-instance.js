@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const urlTest = import.meta.env.VITE_URL_TEST;
+const urlDev = import.meta.env.VITE_URL_DEV;
 
 const axiosInstance = axios.create({
-    baseURL: `https://${apiUrl}/api/v1`,
+    baseURL: `${urlDev}`,
     headers: {
         "Content-type": "application/json",
     }

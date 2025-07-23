@@ -5,6 +5,7 @@ import ProtectedRoutes from "../helper/protected-routes.jsx";
 import Admin from "../pages/admin/Admin.jsx";
 import {RoletaPicanha} from "../pages/game/roda_roda_picanha/RoletaPicanha.jsx";
 import {Burrinho} from "../pages/game/burrinho/Burrinho.jsx";
+import {Ticket} from "../pages/ticket/Ticket.jsx";
 
 const router = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
             {
                 path: "/user",
                 element: <User/>
+            },
+            {
+                path: "/tickets",
+                element: <Ticket/>
             },
             {
                 path: "/game/roda-roda-picanha",

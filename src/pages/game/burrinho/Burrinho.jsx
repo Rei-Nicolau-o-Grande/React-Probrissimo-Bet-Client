@@ -4,6 +4,7 @@ import NavMobile from "../../../components/mobile/nav-mobile.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
 import { GameBurrinho } from "./components/Game-Burrinho.jsx";
 import { TableResultGameBurrinhoFortune } from "./components/table-result-game-burrinho-fortune.jsx";
+import {TicketButton} from "../../ticket/components/Ticket-Button.jsx";
 
 export function Burrinho() {
     return (
@@ -25,6 +26,7 @@ export function Burrinho() {
 
                 <section className="col-span-12 md:col-span-8 py-3 px-3">
                     <h1 className={`text-4xl text-center`}>Burrinho Fortune 🫏</h1>
+                    <TicketButton/>
                     <GameBurrinho />
                     <TableResultGameBurrinhoFortune />
                 </section>
